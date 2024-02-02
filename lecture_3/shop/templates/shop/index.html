@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <title>Index page</title>
+    </head>
+    <body>
+        <h1>Main page</h1>
+        {% if error|length %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+        <div>
+            <form action="" method="POST">
+                {% csrf_token %}
+                {{ form.errors }}
+                {% for field in form %}
+                    <div class="field-wrapper">
+                        {{ field.label_tag }} {{ field }}
+                        <div class="text-danger">
+                            {{ field.errors }}
+                        </div>
+                    </div>
+                {% endfor %}
+                <button type="submit">Create Product</button>
+            </form>
+        </div>
+        {% if products|length > 0 %}
+            <ol>
+                {% for product in products %}
+                <li>{{ product.name }} -- {{ product.price }} KZT <a href="/{{product.id}}/delete"><button>Delete</button></a></li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p>Products Not Found</p>
+        {% endif %}
+    </body>
+</html>
+
