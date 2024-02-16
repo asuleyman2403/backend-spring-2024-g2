@@ -5,7 +5,7 @@ from django.contrib import messages
 
 
 def index_page_view(request):
-    return redirect(to='products_page')
+    return (to='products_page')
 
 
 def products_page_view(request):
