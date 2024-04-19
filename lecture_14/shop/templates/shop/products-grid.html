@@ -1,0 +1,143 @@
+<div class="row g-2 mt-5">
+    <div class="col-2">
+        <label for="size" class="form-label">Page size</label>
+        <select class="form-select" onchange="handleParamChange(event, 'size')" id="size">
+            {% for size in sizes %}
+            {% if size == paginator.per_page %}
+            <option value="{{ size }}" selected>{{ size }}</option>
+            {% else %}
+            <option value="{{ size }}">{{ size }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-2">
+        <label for="order_by" class="form-label">Order by</label>
+        <select class="form-select" onchange="handleParamChange(event, 'order_by')" id="order_by">
+            {% if order_by == 'name' %}
+            <option value="name" selected>By name</option>
+            {% else %}
+            <option value="name">By name</option>
+            {% endif %}
+            {% if order_by == '-name' %}
+            <option value="-name" selected>By name desc</option>
+            {% else %}
+            <option value="-name">By name desc</option>
+            {% endif %}
+            {% if order_by == 'price' %}
+            <option value="price" selected>By price</option>
+            {% else %}
+            <option value="price">By price</option>
+            {% endif %}
+            {% if order_by == '-price' %}
+            <option value="-price" selected>By price desc</option>
+            {% else %}
+            <option value="-price">By price desc</option>
+            {% endif %}
+        </select>
+    </div>
+    <div class="col-2">
+        <label for="name" class="form-label">Search</label>
+        <input class="form-control" id="name" value="{{ filters.name }}" name="name"/>
+    </div>
+    <div class="col-2">
+        <label for="min_price" class="form-label">Min Price</label>
+        <input class="form-control" id="min_price" value="{{ filters.min_price }}" name="min_price"/>
+    </div>
+    <div class="col-2">
+        <label for="max_price" class="form-label">Max Price</label>
+        <input class="form-control" id="max_price" value="{{ filters.max_price }}" name="max_price"/>
+    </div>
+    <div class="col-2 d-flex align-items-end">
+        <button class="btn btn-primary" onclick="handleFilterChange()">Apply Filter</button>
+    </div>
+</div>
+<div class="row my-4 gx-5 gy-3">
+    {% for product in page_obj %}
+    <div class="col-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.description}}</p>
+                <p class="card-text">{{ product.price }} KZT</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <a href="{% url 'add_to_basket' pk=product.id %}" class="d-block mt-4">
+                    <button class="btn btn-primary">Add item</button>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="col-12">
+        <nav class="d-flex justify-content-center align-items-center">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)"
+                       onclick="handlePaginationChange(1)" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)"
+                       onclick="handlePaginationChange({{page_obj.number|add:-1}})" aria-label="Previous">
+                        <span aria-hidden="true"> < </span>
+                    </a>
+                </li>
+                {% endif %}
+                {% for page in paginator.page_range %}
+                {% if page_obj.number == page %}
+                <li class="page-item active"><a class="page-link" href="javascript:void(0)"
+                                                onclick="handlePaginationChange({{page}})">{{ page }}</a></li>
+                {% elif page >= page_obj.number|add:-2 and page <= page_obj.number|add:2 %}
+                <li class="page-item"><a class="page-link" href="javascript:void(0)"
+                                         onclick="handlePaginationChange({{page}})">{{ page }}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" aria-label="Next"
+                       onclick="handlePaginationChange({{page_obj.number|add:1}})">
+                        <span aria-hidden="true"> > </span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0)" aria-label="Next"
+                       onclick="handlePaginationChange({{paginator.num_pages}})">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    <script>
+        const handlePaginationChange = (page) => {
+            const params = (new URL(document.location)).searchParams;
+            params.set('page', page)
+            window.location.search = params.toString();
+        }
+
+        const handleParamChange = (event, name) => {
+            console.log(event);
+            const value = event.target.value;
+            const params = (new URL(document.location)).searchParams;
+            params.set(name, value)
+            window.location.search = params.toString();
+        }
+
+        const handleFilterChange = () => {
+            const params = (new URL(document.location)).searchParams;
+            const name = document.getElementById('name').value;
+            const min_price = document.getElementById('min_price').value;
+            const max_price = document.getElementById('max_price').value;
+            params.set('name', name)
+            params.set('min_price', min_price)
+            params.set('max_price', max_price)
+            window.location.search = params.toString();
+        }
+
+
+
+    </script>
+</div>
